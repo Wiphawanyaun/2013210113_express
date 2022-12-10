@@ -8,9 +8,9 @@ const companySchema = new Schema({
     address: {
       province : String,
     }
-  });
+  }/*  ,{collection: "settings"}*/);
 
 
-  const company = mongoose.model("Companys",companySchema)
+  const company = mongoose.model("Setting",companySchema)
 
   module.exports = company
