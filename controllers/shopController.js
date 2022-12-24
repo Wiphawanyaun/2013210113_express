@@ -11,8 +11,8 @@ exports.index = async (req, res, next) => {
     return {
       id: shop._id,
       name: shop.name,
-      photo : 'http://localhost:3000/images/'+ shop.photo,
-      loaction : shop.location,
+      photo: "http://localhost:3000/images/" + shop.photo,
+      loaction: shop.location,
     };
   });
 
@@ -21,11 +21,28 @@ exports.index = async (req, res, next) => {
   });
 };
 
-
 exports.menu = async (req, res, next) => {
-  const menu = await Menu.find().sort({ _id: -1 });
+  // const menu = await Menu.find()
+  // .select('+name -price')
+  // .sort({ _id: -1 });
+
+  // const menu = await Menu.find()
+  // .where('price').gt(200)
+
+  const menu = await Menu.find().populate("shop");
 
   res.status(200).json({
     data: menu,
+  });
+};
+
+exports.show = async (req, res, next) => {
+  const { id } = req.params;
+  const shop = await Shop.findById({
+    _id: id,
+  }).populate("menu");
+
+  res.status(200).json({
+    data: shop,
   });
 };

@@ -9,13 +9,19 @@ const shopSchema = new Schema(
       lat: Number,
       lgn: Number,
     },
-    // createdAT: { type: Date, default: Date.now },
-    // updatedAT: { type: Date, default: Date.now },
   },
-  { 
-    timestamps:true,
-    collection: "shops" }
+  {
+    toJSON: { virtuals: true },
+    timestamps: true,
+    collection: "shops",
+  }
 );
+
+shopSchema.virtual("menu", {
+  ref: "Menu",
+  localField: "_id",
+  foreignField: "shop",
+});
 
 const shop = mongoose.model("Shop", shopSchema);
 
