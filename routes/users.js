@@ -27,4 +27,21 @@ router.post(
   userController.register
 );
 
+router.post(
+  "/login",
+  [
+    body("email")
+      .not()
+      .isEmpty()
+      .withMessage("กรุณาป้อนอีเมลด้วย")
+      .isEmail()
+      .withMessage("รูปแบบอีเมลไม่ถูกต้อง"),
+    body("password")
+      .not()
+      .isEmpty()
+      .withMessage("กรุณาใส่รหัสผ่าน")
+  ],
+  userController.log
+);
+
 module.exports = router;
