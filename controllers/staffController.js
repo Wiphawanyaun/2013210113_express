@@ -3,6 +3,7 @@ const path = require("path");
 const uuidv4 = require("uuid");
 const { promisify } = require("util");
 const writeFileAsync = promisify(fs.writeFile);
+const { validationResult } = require("express-validator");
 
 const Staff = require("../models/staff");
 
@@ -45,17 +46,27 @@ exports.show = async (req, res, next) => {
 };
 
 exports.insert = async (req, res, next) => {
-  const { name, salary, photo } = req.body;
-
-  let staff = new Staff({
-    name: name,
-    salary: salary,
-    photo: await saveImageToDisk(photo),
-  });
-  await staff.save();
-  res.status(200).json({
-    message: "เพิ่มข้อมูลเรียบร้อยแล้ว",
-  });
+  try {
+    const { name, salary, photo } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("ข้อมูลที่ได้รับมาไม่ถูกต้อง");
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
+    let staff = new Staff({
+      name: name,
+      salary: salary,
+      photo: await saveImageToDisk(photo),
+    });
+    await staff.save();
+    res.status(200).json({
+      message: "เพิ่มข้อมูลเรียบร้อยแล้ว",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 async function saveImageToDisk(baseImage) {
